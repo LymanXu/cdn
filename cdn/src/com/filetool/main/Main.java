@@ -16,6 +16,7 @@ public class Main
 {
     public static void main(String[] args)
     {
+        /*
         if (args.length != 2)
         {
             System.err.println("please input args: graphFilePath, resultFilePath");
@@ -23,7 +24,9 @@ public class Main
         }
 
         String graphFilePath = args[0];
-        String resultFilePath = args[1];
+        String resultFilePath = args[1];*/
+        String graphFilePath = "case0.txt";
+        String resultFilePath = "result.txt";
 
         LogUtil.printLog("Begin");
 
