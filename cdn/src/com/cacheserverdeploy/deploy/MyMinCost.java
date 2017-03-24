@@ -204,68 +204,42 @@ public class MyMinCost {
     /**
      * 输出路径信息
      */
-    public List<String> getRes(Graph graph, int start, int end){
+    LinkedList<String> pathList=new LinkedList<String>();
+    List<Integer> pathCostList=new ArrayList<Integer>();
+    int totalCost=0;
 
-        List<String> pathList = new ArrayList<>();
+    public String[] getRes(Graph graph,int start,int end){
+        StringBuilder sb=new StringBuilder();
+        getPath(graph,end,sb,Integer.MAX_VALUE,0,start);
+        pathList.addFirst("");
+        pathList.addFirst(pathList.size()+"");
+        return pathList.toArray(new String[pathList.size()]);
+    }
+    public void getPath(Graph graph,int end,StringBuilder sb,int flow,int cost,int node){
 
-        Stack<Integer> nodeStack = new Stack<>();
-        Boolean[] visitedStack = new Boolean[graph.totalNodeNum];
-        Arrays.fill(visitedStack, false);
-
-        nodeStack.push(start);
-
-        while(!nodeStack.isEmpty()){
-            int front = nodeStack.peek();
-            int maxFlowOfPath = Integer.MAX_VALUE;
-
-            while(front != end && !nodeStack.isEmpty()){
-                int i;
-                Boolean findNode = false;
-
-                for(i = 0 ;i < graph.edgeArrList[front].size(); i++){
-                    if(!visitedStack[graph.edgeArrList[front].get(i).to] && graph.edgeArrList[front].get(i).flow > 0){
-
-                        // 边上有流量，入栈
-                        nodeStack.push(graph.edgeArrList[front].get(i).to);
-                        visitedStack[graph.edgeArrList[front].get(i).to] = true;
-
-                        // 更新路径的最大流量
-                        maxFlowOfPath = Math.min(maxFlowOfPath, graph.edgeArrList[front].get(i).flow);
-                        findNode = true;
-                        break;
-                    }
-                }
-
-                if(!findNode){
-                    // 遍历完点的所有邻接边，没找到路回退
-                    nodeStack.pop();
-                }
-
-                if(!nodeStack.isEmpty()){
-                    front = nodeStack.peek();
-                }
-            }
-
-            // 输出栈内内容,路径+流量（末尾为路径流量）
-            if(front == end){
-                StringBuilder strBuilder = new StringBuilder();
-                for(Integer tempNode : nodeStack){
-                    strBuilder.append(tempNode + " ");
-                }
-
-                // 追加上流量
-                strBuilder.append(maxFlowOfPath);
-
-                pathList.add(strBuilder.toString());
-
-                // 弹出终点和上一个顶点
-                nodeStack.pop();
-                nodeStack.pop();
-                visitedStack[end] = false;
+//        sb=new StringBuilder(sb);
+        if(node<end-1){//如果当前不是临时节点，路径增加当前节点
+            sb.append(node+" ");
+        }
+        List<MyMinCost.Edge> list=graph.edgeArrList[node];
+        for(MyMinCost.Edge edge:list){
+            //如果没有流量即路不通，直接continue
+            if(edge.flow==0)continue;
+            //如果走向的是汇点，直接转而指向消费者，然后add路径即可
+            if(edge.to==end){
+                sb.append(Deploy.node_consumer.get(node)+" "+flow);//加入消费节点并连接流量
+                pathList.add(sb.toString());//加入路径集
+                pathCostList.add(cost*flow/2);//计算费用
+                totalCost+=cost*flow/2;
+            }else {
+                //计算最小流量
+                flow=Math.min(flow,edge.flow);
+                //计算单位费用和
+                cost+=edge.cost;
+                //传给下一层
+                getPath(graph,end,sb,flow,cost,edge.to);
             }
         }
-
-        return pathList;
     }
 
 }

@@ -42,7 +42,7 @@ public class Deploy
         System.out.println("最大流量："+graph.maxFlow+" 需求："+allNeed);
 
         // 输出路径
-        List<String> pathList = myMinCost.getRes(graph, st, ed);
+        String[] pathList = myMinCost.getRes(graph, st, ed);
         System.out.println("路径：" + pathList.toString());
 
         return new String[]{"17","\r\n","0 8 0 20"};
