@@ -16,6 +16,8 @@ abstract class Individual implements Cloneable{
     public abstract void generateIndividual();//随机产生个体
     public abstract void calTargetValue();//获取目标函数值
 
+    public abstract Boolean normalChrom(); //判断该个体是否满足约束
+
     public double getFitness(){
         return fitness;
     }
@@ -37,15 +39,6 @@ abstract class Individual implements Cloneable{
         return chrom.getGene(begin,end);
     }
 
-    /*
-    public boolean setChrom(String gene){
-        return chrom.setGene(gene);
-    }
-
-    public String getChrom() {
-        return chrom.getGene();
-    }
-    */
     public void mutateSingleBit(int index){
         String gene , gn;
         gene = chrom.getGene(index , index);

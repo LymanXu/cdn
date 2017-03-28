@@ -13,7 +13,6 @@ public class MyMinCost {
      * 最小费用最大流，使用spfa
      */
     public final static int MAX_NODE = 7280;
-    public int minCost = 0;
 
     static class Edge {
         /*
@@ -23,27 +22,30 @@ public class MyMinCost {
          * next: 目前没有用到
          * capacity: 这条边的容量
          */
-        int to, flow, cost, next, capatity;
+        int to, flow, cost, next, capatity,from;
         int real;
         boolean toVisited=false;
 
-        public Edge(int to, int capatity, int cost, int next,int real) {
+        public Edge(int from,int to, int capatity, int cost, int next,int real) {
             this.flow = 0;
             this.to = to;
             this.capatity = capatity;
             this.cost = cost;
             this.next = next;
             this.real=real;
+            this.from=from;
         }
     }
 
-    static class Graph {
+    public static class Graph {
         int totalNodeNum, totalSourceNodeNum, totalConsumerNodeNum, serverCost, gEdgeCount;
         List<Edge>[] edgeArrList = null;
-        int[] gHead;
+        // int[] gHead;
 
-        // the max flow of this graph
+        // 图的最大流
         int maxFlow;
+        //图的最小费用
+        int minCost=0;
 
         public Graph(int totalNodeNum, int totalSourceNodeNum, int totalConsumerNodeNum, int serverCost) {
             this.totalNodeNum = totalNodeNum;
@@ -55,7 +57,7 @@ public class MyMinCost {
             for (int i = 0; i < totalNodeNum; i++) {
                 edgeArrList[i] = new ArrayList<Edge>();
             }
-            this.gHead = new int[totalNodeNum];
+            // this.gHead = new int[totalNodeNum];
         }
 
         public void addEdge(int from, int to, int capatity, int cost) {
@@ -63,16 +65,16 @@ public class MyMinCost {
                 return;
             }
 
-            edgeArrList[from].add(new Edge(to, capatity, cost, edgeArrList[to].size(),capatity));
+            edgeArrList[from].add(new Edge(from, to, capatity, cost, edgeArrList[to].size(),capatity));
             // gHead[from] = gEdgeCount++;
 
             // 增加反向边
-            edgeArrList[to].add(new Edge(from, 0, -cost, edgeArrList[from].size(),0));
+            edgeArrList[to].add(new Edge(to, from, 0, -cost, edgeArrList[from].size(),0));
             // gHead[to] = gEdgeCount++;
         }
     }
 
-    Boolean Spfa(Graph graph, int start, int end) {
+    public Boolean Spfa(Graph graph, int start, int end) {
         if (graph == null || graph.edgeArrList == null) {
             return false;
         }
@@ -92,7 +94,6 @@ public class MyMinCost {
         Boolean[] gVisited = new Boolean[graph.totalNodeNum];
 //        gVisited[start] = true;
         Arrays.fill(gVisited, false);
-        gVisited[start] = true;
 
         // nodeVisitedNum代表点进入过几次队列
         int[] nodeVisitedNum = new int[graph.totalNodeNum];
@@ -150,7 +151,6 @@ public class MyMinCost {
         }
         if (gPreNode[end] == -1) {
             // 没有到达终点
-            minCost += graph.edgeArrList[start].size() * graph.serverCost;
             return false;
         }
         //更新边的流量
@@ -219,93 +219,57 @@ public class MyMinCost {
     /**
      * 输出路径信息
      */
-    public String[] getRes(Graph graph, int start, int end) {
-        StringBuilder sb = new StringBuilder();
-        LinkedList<String> pathList = getPath(graph, start, end);
-        int size = pathList.size();
-        pathList.addFirst("");
-        pathList.addFirst(size + "");
-        return pathList.toArray(new String[pathList.size()]);
-    }
+    LinkedList<String> pathList=new LinkedList<String>();
+    List<Integer> pathCostList=new ArrayList<Integer>();
 
-    public LinkedList<String> getPath(Graph graph, int start, int end) {
+    public String[] getRes(Graph graph,int start,int end){
+        int size=graph.edgeArrList.length;
+        List<MyMinCost.Edge> list=null;
 
-        LinkedList<String> pathList = new LinkedList<>();
+        for(MyMinCost.Edge edge:graph.edgeArrList[start]){
+            while(edge.flow!=0){//有流量下走，总能走到end
+                StringBuilder sb=new StringBuilder();
 
-//        Stack<Integer> nodeStack = new Stack<>();
-        Stack<MyMinCost.Edge> edgeStack ;
-//        nodeStack.push(start);
-        MyMinCost.Edge init = new MyMinCost.Edge(start, 0, 0, 0,0);
-        init.flow = Integer.MAX_VALUE;
-        int flag=0;
-        Boolean[] visitedStack = new Boolean[graph.totalNodeNum];//每个节点最多只能访问一次汇聚节点
-        Arrays.fill(visitedStack, false);
-        while (flag==0) {
-            edgeStack = new Stack<>();
-            edgeStack.push(init);
-            int minFlowOfPath = Integer.MAX_VALUE;//最小流量
-            MyMinCost.Edge front = edgeStack.peek();
-            visitedStack[front.to]=true;
+                int minFlow=edge.flow;
+                int tempCost=0;//记录总的单位费用
 
-            while (front.to != end && !edgeStack.isEmpty()) {
-                int i;
-                Boolean findPath = false;
+                boolean[] visited=new boolean[size];
+                Arrays.fill(visited,false);
+                list=new ArrayList<>();
+                list.add(edge);
 
-                for (i = 0; i < graph.edgeArrList[front.to].size(); i++) {
-                    if (!visitedStack[graph.edgeArrList[front.to].get(i).to]&&graph.edgeArrList[front.to].get(i).flow > 0) {
-
-                        // 边上有流量，边入栈
-                        edgeStack.push(graph.edgeArrList[front.to].get(i));
-                        visitedStack[graph.edgeArrList[front.to].get(i).to]=true;
-                        // 更新路径的最小流量
-                        minFlowOfPath = Math.min(minFlowOfPath, graph.edgeArrList[front.to].get(i).flow);
-                        findPath = true;
-                        break;
+                visited[start]=true;
+                visited[edge.to]=true;
+                sb.append(edge.to+" ");
+                MyMinCost.Edge tpEdge =edge;
+                while (tpEdge.to!=end) {
+                    int to=tpEdge.to;
+                    int i = 0;
+                    tpEdge = graph.edgeArrList[to].get(i);
+                    while (tpEdge.flow == 0||visited[tpEdge.to]) {
+                        tpEdge = graph.edgeArrList[to].get(++i);
                     }
-                }
-                if (!findPath) {
-                    // 遍历完点的所有邻接边，没找到路,回退
-                    Edge edge=edgeStack.pop();
-                    visitedStack[edge.to]=false;
-                }
-                if (!edgeStack.isEmpty()) {
-                    front = edgeStack.peek();
-                }else {
-                    flag=1;
-                }
-            }
-            // 输出栈内内容,路径+流量（末尾为路径流量）
-            if (front.to == end) {
-                StringBuilder strBuilder = new StringBuilder();
-                int beforeNode = -1;//记录前一个节点，用于汇聚点时找到消费节点
-                for (MyMinCost.Edge tempEdge : edgeStack) {
-                    //添加路径
-                    if (tempEdge.to == start || tempEdge.to > end) {//如果是源点或者是新增的节点，路径不增加
-                        beforeNode = tempEdge.to;
-                        continue;
-                    } else if (tempEdge.to == end) {//如果是汇聚边，不添加汇聚点，而是添加消费节点
-                        strBuilder.append(Deploy.node_consumer.get(beforeNode) + " ");
-                        strBuilder.append(minFlowOfPath);//添加流量
-                    } else {//普通边
-                        strBuilder.append(tempEdge.to + " ");
+                    visited[tpEdge.to]=true;
+                    list.add(tpEdge);
+                    if(tpEdge.to<start) {//添加边
+                        sb.append(tpEdge.to + " ");
                     }
-                    beforeNode = tempEdge.to;
+                    minFlow=Math.min(minFlow,tpEdge.flow);
+                    tempCost+=tpEdge.cost;
                 }
-                pathList.add(strBuilder.toString());
-                //弹出
-                MyMinCost.Edge edge = null;
-
-                for (int i = 1; i <= edgeStack.size(); i++) {
-                    edge = edgeStack.pop();
-                    visitedStack[edge.to]=false;
-                    edge.flow -= minFlowOfPath;//减流量
-                    if(edge.flow<0){
-                        System.out.println("@输出路径有负流量");
-                    }
+                //计算这条路径费用并加入总费用
+                graph.minCost+=tempCost*minFlow;
+                //削减流量
+                for(MyMinCost.Edge edgeTemp:list){
+                    edgeTemp.flow-=minFlow;
                 }
+                sb.append(Deploy.node_consumer.get(tpEdge.from)+" "+minFlow);//加入消费节点并连接流量
+                pathList.add(sb.toString());
             }
         }
-        return pathList;
+        int pathNum=pathList.size();
+        pathList.addFirst("");
+        pathList.addFirst(pathNum+"");
+        return pathList.toArray(new String[pathList.size()]);
     }
-
 }

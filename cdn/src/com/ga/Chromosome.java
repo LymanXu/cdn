@@ -50,20 +50,6 @@ class Chromosome implements Cloneable{
         return chromosome.toString();
     }
 
-    /* 设置基因
-    public boolean setGene(String gene){
-        if(gene == null || gene.length() < chromosomeLength){
-            return false;
-        }
-        chromosome.append(gene);
-        return true;
-    }
-
-    // 获取基因
-    public String getGene(){
-        return chromosome.toString();
-    }*/
-
     @Override
     public     Object clone()throws CloneNotSupportedException{
         Chromosome c = null;

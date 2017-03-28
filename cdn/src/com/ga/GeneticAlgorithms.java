@@ -28,31 +28,48 @@ class GeneticAlgorithms{
 
     public static void main(String[] args)throws IOException {
 
+        /*
         FileWriter fw = new FileWriter("result.txt");
         BufferedWriter bw = new BufferedWriter(fw);
-        PrintWriter pw = new PrintWriter(bw);
+        PrintWriter System.out = new PrintWriter(bw);*/
 
         // 个体的基因个数
         int chromlen = 20;
 
-        int serverCost = 0;
-        Population pop = new Population(populationSize, chromlen, serverCost);
+        Population pop = new Population(populationSize, chromlen);
         pop.initPopulation();
 
-        pw.println("初始种群:\n" + pop);
+        System.out.println("初始种群:\n" + pop);
         while(!pop.isEvolutionDone()){
             pop.evolve();
-            pw.print("第" + pop.getGeneration() + "代Best:" + pop.bestIndividual );
-            pw.print("第" + pop.getGeneration()  + "代current:" + pop.currentBest );
-            pw.println("");
+            System.out.print("第" + pop.getGeneration() + "代Best:" + pop.bestIndividual );
+            System.out.print("第" + pop.getGeneration()  + "代current:" + pop.currentBest );
+            System.out.println("");
         }
-        pw.println();
-        pw.println("第"+ pop.getGeneration()  + "代群体:\n" + pop);
+        System.out.println();
+        System.out.println("第"+ pop.getGeneration()  + "代群体:\n" + pop);
 
-        pw.close();
+        System.out.close();
     }
 
-    public void print(){
+    // mincostmaxflow 调用函数
+    public static int[] myGA(int chromlen){
 
+        Population pop = new Population(populationSize, chromlen);
+        pop.initPopulation();
+
+        System.out.println("初始种群:\n" + pop);
+        while(!pop.isEvolutionDone()){
+            pop.evolve();
+            System.out.print("第" + pop.getGeneration() + "代Best:" + pop.bestIndividual );
+            System.out.print("第" + pop.getGeneration()  + "代current:" + pop.currentBest );
+            System.out.println("");
+        }
+        System.out.println();
+        System.out.println("第"+ pop.getGeneration()  + "代群体:\n" + pop);
+
+        RosenbrockIndividual individual = (RosenbrockIndividual) pop.currentBest;
+        return individual.getServerNodes();
     }
+
 }

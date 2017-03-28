@@ -17,7 +17,7 @@ class Population{
     private int worstIndex;//bestIndividual对应的数组下标
 
 
-    public Population(int size, int chromlen, int serverCost){
+    public Population(int size, int chromlen){
         this.generation = 0;
         this.size = size;
 
@@ -28,7 +28,7 @@ class Population{
         this.chromlen = chromlen;
 
         for(int i = 0; i < size; i++){
-            pop[i] = new RosenbrockIndividual(chromlen, serverCost);
+            pop[i] = new RosenbrockIndividual(chromlen);
         }
     }
 
@@ -166,6 +166,14 @@ class Population{
         select();
         crossover();
         mutate();
+
+        // 完成所有的选择、交叉、变异操作后重新校验个体是否满足条件
+        for(int i = 0; i < size; i++){
+            if(!pop[i].normalChrom()){
+                pop[i].generateIndividual();
+            }
+        }
+
         evaluate();
     }
 

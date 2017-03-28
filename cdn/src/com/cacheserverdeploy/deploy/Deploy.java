@@ -1,10 +1,7 @@
 package com.cacheserverdeploy.deploy;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Deploy
 {
@@ -23,43 +20,36 @@ public class Deploy
     public static String[] deployServer(String[] graphContent)
     {
         /**do your work here**/
-//        System.out.println(graphContent.toString());
-
-        List<Integer> servers=new ArrayList<Integer>();
-        servers.add(7);
-        servers.add(15);
-        servers.add(34);
-        servers.add(38);
-//        servers.add(41);
+        int[] servers = {7, 13, 22, 37, 38, 43};
 //        servers.add(48);
-        MyMinCost.Graph graph= init(servers,graphContent);
+
+        MyMinCost.Graph graph= init(servers,graphContent);//初始化
         MyMinCost myMinCost=new MyMinCost();
-        int i=0;
         while (myMinCost.Spfa(graph,st,ed)){//求最短路径
-//            System.out.println(i++);
         }
+        //初始化总费用
+        graph.minCost=graph.serverCost*servers.length;
 
-
-        for (List<MyMinCost.Edge> edgeList:graph.edgeArrList) {
-            for(MyMinCost.Edge edge:edgeList){
-                if(edge.flow<0){
-                    System.out.println(edge.flow);
-                }
-                if(edge.flow+edge.capatity!=edge.real&&edge.cost>0){
-                    System.out.println(edge.flow);
-                }
-            }
-        }
-
-
-        String[] result=myMinCost.getRes(graph,st,ed);
-        System.out.println("最小费用："+myMinCost.minCost);
+        String[] result=myMinCost.getRes(graph,st,ed);//返回路径数组
+        System.out.println("最小费用："+graph.minCost/2);
         System.out.println("最大流量："+graph.maxFlow+" 需求："+allNeed);
 
-        return result;
-        // return new String[]{"17","\r\n","0 8 0 20"};
+        return new String[]{"17","\r\n","0 8 0 20"};
     }
-    public static MyMinCost.Graph init(List<Integer> servers, String[] graphContent){
+
+    /*
+     * 使用GA迭代选优
+     */
+    public static int[] searchServerPositionByGA(String[] graphContent){
+
+        //@ 需要修改
+        int[] serverPosition = new int[1];
+
+
+        return serverPosition;
+    }
+
+    public static MyMinCost.Graph init(int[] servers, String[] graphContent){
         String[] temp=graphContent[0].split(" ");
         allNeed=0;
 
@@ -67,12 +57,12 @@ public class Deploy
         int linkNum=Integer.parseInt(temp[1]);
         int consumerNum=Integer.parseInt(temp[2]);
 
-        int serverCost=Integer.parseInt(graphContent[2]);
+        int serverCost=Integer.parseInt(graphContent[2])*2;
 
         st=nodeNum;
         ed=nodeNum+1;
 
-        int degeNum=linkNum+linkNum*2+servers.size()+consumerNum;
+//        int degeNum=linkNum+linkNum*2+servers.size()+consumerNum;
         int totalNum=nodeNum+2+linkNum;//总节点数
 
         MyMinCost.Graph graph=new MyMinCost.Graph(totalNum,0,consumerNum,serverCost);
@@ -98,14 +88,12 @@ public class Deploy
             node_consumer.put(Integer.parseInt(temp[1]),Integer.parseInt(temp[0]));
             i++;
         }
+
         //增加从源点到每一个网络节点的边
-        i=0;
-        int serversNum=servers.size();
-        while (i<serversNum){
-            graph.addEdge(st, servers.get(i),Integer.MAX_VALUE,0 );
-            i++;
+        for(i =0; i < servers.length; i++){
+            graph.addEdge(st, servers[i], Integer.MAX_VALUE, 0);
         }
+
         return graph;
     }
-
 }
