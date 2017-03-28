@@ -17,7 +17,7 @@ class Population{
     private int worstIndex;//bestIndividual对应的数组下标
 
 
-    public Population(int size, int chromlen){
+    public Population(int size, int chromlen, int serverCost){
         this.generation = 0;
         this.size = size;
 
@@ -28,7 +28,7 @@ class Population{
         this.chromlen = chromlen;
 
         for(int i = 0; i < size; i++){
-            pop[i] = new RosenbrockIndividual(chromlen);
+            pop[i] = new RosenbrockIndividual(chromlen, serverCost);
         }
     }
 

@@ -34,7 +34,9 @@ class GeneticAlgorithms{
 
         // 个体的基因个数
         int chromlen = 20;
-        Population pop = new Population(populationSize, chromlen);
+
+        int serverCost = 0;
+        Population pop = new Population(populationSize, chromlen, serverCost);
         pop.initPopulation();
 
         pw.println("初始种群:\n" + pop);
