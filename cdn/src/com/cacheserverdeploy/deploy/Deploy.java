@@ -1,7 +1,5 @@
 package com.cacheserverdeploy.deploy;
 
-
-import com.ga.GeneticAlgorithms;
 import com.simpleGa.MainTest;
 import com.simpleGa.ResultForGA;
 
