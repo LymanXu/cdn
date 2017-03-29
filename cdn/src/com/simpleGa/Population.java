@@ -10,7 +10,7 @@ public class Population {
         individuals = new Individual[populationSize];
         // 初始化种群
         if (initialise) {
-            for (int i = 0; i < size(); i++) {
+            for (int i = 1; i < size(); i++) {
                 Individual newIndividual = new Individual(genesLength);
                 newIndividual.generateIndividual();
                 saveIndividual(i, newIndividual);

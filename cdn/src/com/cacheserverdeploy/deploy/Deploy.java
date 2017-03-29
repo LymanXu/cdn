@@ -5,6 +5,7 @@ import com.ga.GeneticAlgorithms;
 import com.simpleGa.MainTest;
 import com.simpleGa.ResultForGA;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +29,16 @@ public class Deploy {
     public static MyMinCost.Graph graph=null;
     public static MyMinCost myMinCost = new MyMinCost();//最短路工具类
 
+    public static int[] first;
+
 
     public static String[] deployServer(String[] graphContent) {
         /**do your work here**/
         //初始化路径
         init(graphContent);//初始化
-        // 调用ga
 
-        int[] serverPosition= MainTest.myGA(nodeNum, 50);//最优的服务器位置
+        // 调用ga
+        int[] serverPosition= MainTest.myGA(nodeNum, first,30);//最优的服务器位置
         ResultForGA rf=getMinCost(serverPosition);
 
         //返回路径数组
@@ -78,11 +81,14 @@ public class Deploy {
         }
         i++;
         //增加从消费节点所在的网络节点到汇点的边
+        first=new int[nodeNum];
+        Arrays.fill(first,0);
         while (i < graphContent.length) {
             temp = graphContent[i].split(" ");
             graph.addEdge(Integer.parseInt(temp[1]), ed, Integer.parseInt(temp[2]), 0);
             allNeed += Integer.parseInt(temp[2]);
             node_consumer.put(Integer.parseInt(temp[1]), Integer.parseInt(temp[0]));
+            first[Integer.parseInt(temp[1])]=1;//将消费节点所连接的网络节点作为初始服务器位置
             i++;
         }
         //增加从源点到每一个网络节点的边，初始化容量无穷大

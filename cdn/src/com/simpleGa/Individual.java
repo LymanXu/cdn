@@ -112,6 +112,17 @@ public class Individual {
         return servers;
     }
 
+    public void setServers(int[] firstGene){
+        for(int i = 0; i < size(); i++){
+            if(firstGene[i] == 1){
+                genes[i] = 1;
+            }else{
+                genes[i] = 0;
+            }
+        }
+    }
+
+
     @Override
     public String toString() {
         String geneString = "";

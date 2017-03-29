@@ -26,11 +26,15 @@ public class MainTest {
 	}
 
 	// mincostmaxflow 调用函数
-	public static int[] myGA(int chromlen, int maxGenerate){
+	public static int[] myGA(int chromlen, int[] firstGene, int maxGenerate){
 		/*
 		 * @Param:种群大小、基因长度
 		 */
-		Population myPop = new Population(50,true, chromlen);
+		Population myPop = new Population(20,true, chromlen);
+
+		Individual individual = new Individual(chromlen);
+		individual.setServers(firstGene);
+		myPop.saveIndividual(0, individual);
 		// 不段迭代，进行进化操作。 直到找到期望的基因序列
 		int generationCount = 0;
 		while (generationCount < maxGenerate) {
@@ -44,9 +48,9 @@ public class MainTest {
 		System.out.println("Final Fittest Genes:");
 		System.out.println(myPop.getFittest());
 
-		Individual individual = myPop.getFittest();
+		Individual bestIndividual = myPop.getFittest();
 
-		return individual.getServers();
+		return bestIndividual.getServers();
 
 	}
 }
