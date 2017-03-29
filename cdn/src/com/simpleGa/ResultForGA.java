@@ -1,4 +1,4 @@
-package com.ga;
+package com.simpleGa;
 
 /**
  * Author: Wucheng
@@ -8,7 +8,7 @@ package com.ga;
 public class ResultForGA {
 
     private Boolean right;
-    private double score;
+    private double cost;
 
     public Boolean getRight() {
         return right;
@@ -18,11 +18,11 @@ public class ResultForGA {
         this.right = right;
     }
 
-    public double getScore() {
-        return score;
+    public double getCost() {
+        return cost;
     }
 
-    public void setScore(double score) {
-        this.score = score;
+    public void setCost(double cost) {
+        this.cost = cost;
     }
 }

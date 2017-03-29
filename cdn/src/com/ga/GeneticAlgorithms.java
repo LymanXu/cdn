@@ -9,7 +9,7 @@ import java.io.PrintWriter;
  * Date: 2017/3/24 17:56
  * Abstract:给定参数，测试遗传算法
  */
-class GeneticAlgorithms{
+public class GeneticAlgorithms{
     public static double crossoverRate;//交叉概率
     public static double mutateRate;//变异概率
     public static int maxGeneration;//进化代数
@@ -20,8 +20,8 @@ class GeneticAlgorithms{
         //mutateRate = 0.001;
         //maxGeneration  = 100;
         //populationSize = 500;
-        maxGeneration  = 100;
-        populationSize = 500;
+        maxGeneration  = 10;
+        populationSize = 10;
         crossoverRate = 0.6;
         mutateRate = 0.001;
     }

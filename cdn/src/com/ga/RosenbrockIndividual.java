@@ -1,7 +1,7 @@
 package com.ga;
 
 import com.cacheserverdeploy.deploy.Deploy;
-import com.cacheserverdeploy.deploy.MyMinCost;
+import com.simpleGa.ResultForGA;
 
 import java.util.Random;
 
@@ -61,7 +61,7 @@ class RosenbrockIndividual extends Individual {
         String str = "";
         ///str = "基因型:" + chrom + "  ";
         ///str+= "表现型:" + "[x1,x2]=" + "[" + x1 + "," + x2 + "]" + "\t";
-        str+="函数值:" + rosenbrock() + "\n";
+        str+="函数值:" + 1.0/rosenbrock() + "\n";
 
         return     str;
     }
@@ -72,7 +72,7 @@ class RosenbrockIndividual extends Individual {
     public  double rosenbrock(){
         ResultForGA resultForGA = getResult();
 
-        return 0 - resultForGA.getScore();
+        return 1.0/resultForGA.getCost();
     }
 
     /*
@@ -83,8 +83,7 @@ class RosenbrockIndividual extends Individual {
     public ResultForGA getResult(){
         // 调用mincost maxflow的算法
 
-        ResultForGA resultForGA = new ResultForGA();
-
+        ResultForGA resultForGA =Deploy.getMinCost(serverNodes);
         return resultForGA;
     }
 

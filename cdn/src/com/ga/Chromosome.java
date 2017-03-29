@@ -24,7 +24,7 @@ class Chromosome implements Cloneable{
             return false;
 
         //index => chromosome , idx => gene
-        for (int index = begin , idx = 0; index <= end; index++ , idx++) {
+        for (int index = begin , idx = 0; index < end; index++ , idx++) {
             if(idx < len)
                 chromosome.setCharAt(index , gene.charAt(idx));
             else
@@ -36,8 +36,8 @@ class Chromosome implements Cloneable{
 
     //获取基因
     public String getGene(int begin , int end){
-        char[] dest = new char[end - begin + 1];
-        chromosome.getChars(begin , end + 1 , dest , 0);
+        char[] dest = new char[end - begin ];
+        chromosome.getChars(begin , end , dest , 0);
 
         return new String(dest);
     }
