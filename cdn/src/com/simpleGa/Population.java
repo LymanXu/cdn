@@ -2,6 +2,9 @@ package com.simpleGa;
 
 public class Population {
     Individual[] individuals;
+
+    Individual bestIndividual;
+
     /*
      * 构造方法
      */

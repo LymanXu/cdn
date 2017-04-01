@@ -44,7 +44,8 @@ public class Deploy {
         System.out.println("最小费用：" + rf.getCost());
         System.out.println("最大流量：" + graph.maxFlow + " 需求：" + allNeed);
 
-        return new String[]{"17", "\r\n", "0 8 0 20"};
+        // new String[]{"17", "\r\n", "0 8 0 20"};
+        return result;
     }
 
     public static void init(String[] graphContent) {

@@ -15,11 +15,11 @@ public class Algorithm {
     	// 存放新一代的种群
         Population newPopulation = new Population(pop.size(), false, geneLenght);
 
-        // 把最优秀的那个 放在第一个位置. 
+        // 把最优秀的那个 放在第一个位置.
+        Individual bestIndividual = pop.getFittest();
         if (elitism) {
-            newPopulation.saveIndividual(0, pop.getFittest());
+            newPopulation.saveIndividual(0, bestIndividual);
         }
-
         // Crossover population
         int elitismOffset;
         if (elitism) {
