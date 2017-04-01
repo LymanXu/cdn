@@ -1,24 +1,22 @@
-package com.simpleGa;
+package com.cacheserverdeploy.deploy;
 
 public class Population {
     Individual[] individuals;
-
-    Individual bestIndividual;
-
     /*
      * 构造方法
      */
     // 创建一个种群
     public Population(int populationSize, boolean initialise, int genesLength) {
         individuals = new Individual[populationSize];
-        // 初始化种群
+        /* 初始化种群
         if (initialise) {
             for (int i = 1; i < size(); i++) {
                 Individual newIndividual = new Individual(genesLength);
                 newIndividual.generateIndividual();
+//                newIndividual.setGene(first);
                 saveIndividual(i, newIndividual);
             }
-        }
+        }*/
     }
 
     /* Getters */

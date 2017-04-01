@@ -1,4 +1,4 @@
-package com.simpleGa;
+package com.cacheserverdeploy.deploy;
 
 public class Algorithm {
 
@@ -9,17 +9,17 @@ public class Algorithm {
     private static final boolean elitism = true; //精英主义
 
     /* Public methods */
-    
+
     // 进化一个种群
     public static Population evolvePopulation(Population pop, int geneLenght) {
-    	// 存放新一代的种群
+        // 存放新一代的种群
         Population newPopulation = new Population(pop.size(), false, geneLenght);
 
         // 把最优秀的那个 放在第一个位置.
-        Individual bestIndividual = pop.getFittest();
         if (elitism) {
-            newPopulation.saveIndividual(0, bestIndividual);
+            newPopulation.saveIndividual(0, pop.getFittest());
         }
+
         // Crossover population
         int elitismOffset;
         if (elitism) {
@@ -30,7 +30,7 @@ public class Algorithm {
         // Loop over the population size and create new individuals with
         // crossover
         for (int i = elitismOffset; i < pop.size(); i++) {
-        	//随机选择两个 优秀的个体
+            //随机选择两个 优秀的个体
             Individual indiv1 = tournamentSelection(pop, geneLenght);
             Individual indiv2 = tournamentSelection(pop, geneLenght);
             //进行交叉
@@ -49,7 +49,7 @@ public class Algorithm {
          */
         for(int i = 0; i < newPopulation.size(); i++){
             if(!newPopulation.getIndividual(i).normalChrom()){
-               // 不满足约束条件时使用上一代的个体
+                // 不满足约束条件时使用上一代的个体
                 newPopulation.saveIndividual(i, pop.getIndividual(i));
             }
         }

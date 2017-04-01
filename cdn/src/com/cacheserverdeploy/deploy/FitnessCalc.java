@@ -1,6 +1,4 @@
-package com.simpleGa;
-
-import com.cacheserverdeploy.deploy.Deploy;
+package com.cacheserverdeploy.deploy;
 
 public class FitnessCalc {
 

@@ -1,6 +1,4 @@
-package com.simpleGa;
-
-import com.cacheserverdeploy.deploy.Deploy;
+package com.cacheserverdeploy.deploy;
 
 public class Individual {
 
@@ -12,25 +10,6 @@ public class Individual {
 
     public Individual(int geneLength) {
         genes = new byte[geneLength];
-    }
-
-    // 创建一个随机的 基因个体
-    public void generateIndividual() {
-
-        for (int i = 0; i < size(); i++) {
-            byte gene = (byte) Math.round(Math.random());
-            genes[i] = gene;
-        }
-
-        //判断生成的解是否满足约束
-        while(normalChrom()){
-            // 当随机生成的解不满足最大流时，再次随机生成个体
-            for (int i = 0; i < size(); i++) {
-                byte gene = (byte) Math.round(Math.random());
-                genes[i] = gene;
-            }
-        }
-
     }
 
     /*
@@ -68,7 +47,7 @@ public class Individual {
     public static void setDefaultGeneLength(int length) {
         defaultGeneLength = length;
     }
-    
+
     public byte getGene(int index) {
         return genes[index];
     }
@@ -80,6 +59,10 @@ public class Individual {
     public void setGene(int index, byte value) {
         genes[index] = value;
         fitness = 0;
+    }
+
+    public void setGene(byte[] first){
+        this.genes = first;
     }
 
     /* Public methods */
@@ -121,7 +104,6 @@ public class Individual {
             }
         }
     }
-
 
     @Override
     public String toString() {
