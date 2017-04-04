@@ -104,12 +104,12 @@ public class Algorithm {
             elitismOffset = 0;
         }
         // 2. 进行选择操作，使适应度较高的个体进入下代
-        selectChild();
+        //selectChild();
 
 
         // 2. 进行交叉操作，保存到子代
-        for (int i = elitismOffset; i < childPopulation.size(); i++) {
-
+        for (int i = elitismOffset; i < oldPopulation.size(); i++) {
+            /*
             double pick = rand();
             while (pick == 0){
                 pick = rand();
@@ -117,15 +117,14 @@ public class Algorithm {
             if(pick > uniformRate){
                 continue;
             }
-
             //随机选择两个 优秀的个体
             int randomId1 = (int) (rand() * childPopulation.size());
             int randomId2 = (int) (rand() * childPopulation.size());
-
-            // Individual indiv1 = tournamentSelection(oldPopulation, geneLenght);
-            // Individual indiv2 = tournamentSelection(oldPopulation, geneLenght);
             Individual indiv1 = childPopulation.getIndividual(randomId1);
-            Individual indiv2 = childPopulation.getIndividual(randomId2);
+            Individual indiv2 = childPopulation.getIndividual(randomId2);*/
+
+            Individual indiv1 = tournamentSelection(oldPopulation, geneLenght);
+            Individual indiv2 = tournamentSelection(oldPopulation, geneLenght);
             //进行交叉
             Individual newIndiv = crossover(indiv1, indiv2, geneLenght);
 
@@ -304,13 +303,8 @@ public class Algorithm {
         for (int i = 0; i < indiv.size(); i++) {
             if (Math.random() <= mutationRate) {
                 // 生成随机的 0 或 1
-                //byte gene = (byte) Math.round(Math.random());
-
-                if(indiv.getGene()[i] == 1){
-                    indiv.setGene(i, tempNo);
-                }else{
-                    indiv.setGene(i, tempIn);
-                }
+                byte gene = (byte) Math.round(Math.random());
+                indiv.setGene(i, gene);
             }
         }
     }
