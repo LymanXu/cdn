@@ -24,15 +24,19 @@ public class Deploy {
 
     public static byte[] first;
 
+    public static long startTime = 0;
+
 
     public static String[] deployServer(String[] graphContent) {
+        startTime = System.currentTimeMillis();
+
         /**do your work here**/
         //初始化路径
         init(graphContent);//初始化
         //调用ga
 
         //ga计算服务器位置
-        int[] serverPosition= MainTest.myGA(nodeNum, first);//最优的服务器位置
+        int[] serverPosition= MainTest.myGA(nodeNum, first, graph.totalConsumerNodeNum);//最优的服务器位置
 
 //        //模拟GA服务器位置选定
 //        int[] serverPosition=setMyServers();

@@ -1,14 +1,18 @@
 package com.cacheserverdeploy.deploy;
 
+import java.util.Arrays;
+
 public class Individual {
 
-    static int defaultGeneLength = 64;
+    static int geneLength = 0;
     //基因序列
     private byte[] genes = null;
     // 个体的 适应值
     private double fitness = 0;
 
     public Individual(int geneLength) {
+        this.geneLength =geneLength;
+
         genes = new byte[geneLength];
         fitness = 0;
     }
@@ -22,7 +26,7 @@ public class Individual {
         }
 
         //判断生成的解是否满足约束
-        while(normalChrom()){
+        while(!normalChrom()){
             // 当随机生成的解不满足最大流时，再次随机生成个体
             for (int i = 0; i < size(); i++) {
                 byte gene = (byte) Math.round(Math.random());
@@ -31,6 +35,52 @@ public class Individual {
         }
 
     }
+
+    // 创建一个随机的 基因个体
+    public void generateIndividual(int consumerNum) {
+
+        Boolean[] visited = randPosition(consumerNum);
+
+
+        for (int i = 0; i < size(); i++) {
+            if(visited[i]){
+                genes[i] = 1;
+            }
+        }
+
+        //判断生成的解是否满足约束
+        while(!normalChrom()){
+            // 当随机生成的解不满足最大流时，再次随机生成个体
+            visited = randPosition(consumerNum);
+
+            for (int i = 0; i < size(); i++) {
+                if(visited[i]){
+                    genes[i] = 1;
+                }
+            }
+        }
+
+    }
+
+    public Boolean[] randPosition(int consumer){
+
+        Boolean[] visit = new Boolean[geneLength];
+        Arrays.fill(visit, false);
+
+        int num = rand(1,consumer);
+
+        for(int i = 0; i < num; i++){
+            int tempP = rand(0, geneLength);
+
+            while(visit[tempP]){
+                tempP = rand(0, geneLength);
+            }
+            visit[tempP] = true;
+        }
+
+        return visit;
+    }
+
     /*
      * 与前面交互的函数
      *  @param：int[] servers
@@ -117,13 +167,10 @@ public class Individual {
     }
 
     public void setGene(byte[] first){
-        byte[] newGene = new byte[first.length];
 
         for(int i = 0; i < first.length; i++){
-            newGene[i] = first[i];
+            genes[i] = first[i];
         }
-
-        this.genes = newGene;
     }
 
     /* Public methods */
@@ -139,4 +186,14 @@ public class Individual {
         }
         return geneString;
     }
+
+    private double rand() {
+        return Math.random();
+    }
+
+    // 产生[start, end)的随机数
+    private int rand(int start, int end) {
+        return (int) (rand() * (end - start) + start);
+    }
+
 }

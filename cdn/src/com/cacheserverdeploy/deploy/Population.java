@@ -252,6 +252,18 @@ public class Population {
         }
     }
 
+    public double[] getRelativeFitness() {
+        return relativeFitness;
+    }
+
+    public double getAverageFitness() {
+        return averageFitness;
+    }
+
+    public double getTotalFitness() {
+        return totalFitness;
+    }
+
     private double rand() {
         return Math.random();
     }
@@ -268,10 +280,7 @@ public class Population {
 
     // Save individual
     public void saveIndividual(int index, Individual indiv) {
-        Individual newIndi = new Individual(indiv.size());
-        newIndi.setGene(indiv.getGene());
-        newIndi.setFitness(indiv.getFitness());
-        individuals[index] = newIndi;
+        individuals[index] = indiv;
     }
 
     /* Getters */
