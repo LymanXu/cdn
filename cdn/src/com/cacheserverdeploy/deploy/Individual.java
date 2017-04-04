@@ -10,8 +10,27 @@ public class Individual {
 
     public Individual(int geneLength) {
         genes = new byte[geneLength];
+        fitness = 0;
     }
 
+    // 创建一个随机的 基因个体
+    public void generateIndividual() {
+
+        for (int i = 0; i < size(); i++) {
+            byte gene = (byte) Math.round(Math.random());
+            genes[i] = gene;
+        }
+
+        //判断生成的解是否满足约束
+        while(normalChrom()){
+            // 当随机生成的解不满足最大流时，再次随机生成个体
+            for (int i = 0; i < size(); i++) {
+                byte gene = (byte) Math.round(Math.random());
+                genes[i] = gene;
+            }
+        }
+
+    }
     /*
      * 与前面交互的函数
      *  @param：int[] servers
@@ -38,36 +57,12 @@ public class Individual {
     public Boolean normalChrom(){
         ResultForGA resultForGA = getResult();
 
+        // 更新个体适应度
+        if(resultForGA.getRight()){
+            fitness = 1.0/resultForGA.getCost();
+        }
+
         return resultForGA.getRight();
-    }
-
-
-    /* Getters and setters */
-    // Use this if you want to create individuals with different gene lengths
-    public static void setDefaultGeneLength(int length) {
-        defaultGeneLength = length;
-    }
-
-    public byte getGene(int index) {
-        return genes[index];
-    }
-
-    public byte[] getGene(){
-        return genes;
-    }
-
-    public void setGene(int index, byte value) {
-        genes[index] = value;
-        fitness = 0;
-    }
-
-    public void setGene(byte[] first){
-        this.genes = first;
-    }
-
-    /* Public methods */
-    public int size() {
-        return genes.length;
     }
 
     public double getFitness() {
@@ -77,6 +72,9 @@ public class Individual {
         return fitness;
     }
 
+    public void setFitness(double fitness){
+        this.fitness = fitness;
+    }
     /*
      * 将byte[] 转化为int[]表示服务器的位置
      */
@@ -103,6 +101,34 @@ public class Individual {
                 genes[i] = 0;
             }
         }
+    }
+
+    public byte getGene(int index) {
+        return genes[index];
+    }
+
+    public byte[] getGene(){
+        return genes;
+    }
+
+    public void setGene(int index, byte value) {
+        genes[index] = value;
+        fitness = 0;
+    }
+
+    public void setGene(byte[] first){
+        byte[] newGene = new byte[first.length];
+
+        for(int i = 0; i < first.length; i++){
+            newGene[i] = first[i];
+        }
+
+        this.genes = newGene;
+    }
+
+    /* Public methods */
+    public int size() {
+        return genes.length;
     }
 
     @Override

@@ -30,16 +30,9 @@ public class Deploy {
         //初始化路径
         init(graphContent);//初始化
         //调用ga
-        int time=8000;
-//        if(nodeNum>=300){
-//            time=12;
-//        }
-//        if(nodeNum>500){
-//            time=3;
-//        }
 
         //ga计算服务器位置
-        int[] serverPosition= MainTest.myGA(nodeNum, first,time);//最优的服务器位置
+        int[] serverPosition= MainTest.myGA(nodeNum, first);//最优的服务器位置
 
 //        //模拟GA服务器位置选定
 //        int[] serverPosition=setMyServers();
@@ -48,8 +41,8 @@ public class Deploy {
 //        Test.test(graph);
         //返回路径数组
         String[] result = myMinCost.getRes(graph, st, ed);
-        System.out.println("最小费用：" + rf.getCost());
-        System.out.println("最大流量：" + graph.maxFlow + " 需求：" + allNeed);
+//        System.out.println("最小费用：" + rf.getCost());
+//        System.out.println("最大流量：" + myMinCost.maxFlow + " 需求：" + allNeed);
         return result;
     }
 
@@ -72,7 +65,7 @@ public class Deploy {
         graph = new MyMinCost.Graph(totalNum, 0, consumerNum, serverCost);
         //导入边
         int i = 4;
-//        int index = ed + 1;
+//        int index = T + 1;
         while (!(graphContent[i].equals(""))) {
             temp = graphContent[i].split(" ");
             //添加原始边
@@ -99,7 +92,7 @@ public class Deploy {
         //增加从源点到每一个网络节点的边，初始化容量0
         i = 0;
         while (i < nodeNum) {
-            graph.addEdge(st, i, Integer.MAX_VALUE, 0);
+            graph.addEdge(st, i,0, 0);
             i++;
         }
     }
@@ -107,21 +100,23 @@ public class Deploy {
     public static void clear(){
         for(List<MyMinCost.Edge> edgeList:graph.edgeArrList){
             for(MyMinCost.Edge edge:edgeList){
-                edge.flow=0;
-                edge.capatity=edge.real;
+                edge.capatity=edge.realCap;
+                edge.cost=edge.realCost;
+//                edge.capatity=edge.real;
             }
         }
-        graph.maxFlow=0;
     }
     //设置服务器位置,返回服务器数量
     public static int setServers(int[] serverNodes){
         int serverNum=0;
         for (MyMinCost.Edge edge:graph.edgeArrList[st]){
-            if(serverNodes[edge.to]==1){//改点是服务器
+            if(serverNodes[edge.to]==1){//该点是服务器
                 edge.capatity=Integer.MAX_VALUE;//容量置无穷大
+                edge.realCap=Integer.MAX_VALUE;//容量置无穷大
                 serverNum++;
             }else {
                 edge.capatity=0;//容量置0
+                edge.realCap=0;//容量置0
             }
         }
         return serverNum;
@@ -139,17 +134,20 @@ public class Deploy {
         int serverNum=setServers(serverNodes);//设置服务器位置
 
         //求最短路径
-        myMinCost.Spfa(graph, st, ed);
+//        long start=System.currentTimeMillis();
+        myMinCost.zkw_costflow(graph, st, ed);
+//        System.out.println(System.currentTimeMillis()-start);
         //获取最大流量
-        rf.setRight(allNeed==graph.maxFlow?true:false);
+        rf.setRight(allNeed==myMinCost.maxFlow?true:false);
         //得到最小费用
-        int cost=myMinCost.getMinCost(graph);
+        int cost=myMinCost.mCost;
         cost+=serverNum*graph.serverCost;
         rf.setCost(cost);
         return rf;
     }
     public static int[] setMyServers(){
         int[] temp={7,14,17,19,25,26,29,32,35,43,44,59,70,74,82,84,89,93,95,101,111,120,124,126,129,133,137,138,141,147,164,166,167,170,175,178,184,186,187,194,195,198,200,203,205,218,223,227,234,238,242,252,254,259,263,267,268,270,271,275,277,278,281,287,288,297,301,308,320,321,326,328,331,333,334,335,336,338,346,349,363,370,375,381,383,385,387,397,400,402,409,413,415,416,423,426,438,459,462,463,464,474,475,482,488,489,496,497,500,503,505,506,507,520,525,529,537,538,541,542,548,552,557,565,570,575,576,580,584,587,592,594,625,632,634,638,641,643,644,646,651,652,660,663,668,670,671,675,677,679,685,687,695,711,718,719,724,731,739,741,742,745,751,753,755,756,760,765,767,770,774,778,784,791,795,797};
+//        int[] temp={7,13,15,22,37,38,43};
         int[] servers=new int[nodeNum];
         Arrays.fill(servers,0);
         for(int i=0;i<temp.length;i++){

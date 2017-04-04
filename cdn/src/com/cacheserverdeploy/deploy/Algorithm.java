@@ -8,12 +8,86 @@ public class Algorithm {
     private static final int tournamentSize = 5; //淘汰数组的大小
     private static final boolean elitism = true; //精英主义
 
-    /* Public methods */
+    public static Individual globalBestIndividual = null;
 
+
+    /* Public methods */
+    
     // 进化一个种群
+    public static Population myEvolvePopulation(Population pop, int geneLenght) {
+
+        if(globalBestIndividual == null){
+            globalBestIndividual = new Individual(geneLenght);
+            globalBestIndividual.setGene(pop.getIndividual(0).getGene());
+            globalBestIndividual.setFitness(pop.getIndividual(0).getFitness());
+        }
+
+    	// 进行选择并存放新一代的种群
+        //Population newPopulation = pop.select();
+        Population newPopulation = new Population(pop.size());
+
+        if(elitism){
+            newPopulation.saveIndividual(0, pop.getFittest());
+        }
+
+        // 进行交叉,第一个精英个体不交叉
+        newPopulation.cross();
+        int elitismOffset;
+        if (elitism) {
+            elitismOffset = 1;
+        } else {
+            elitismOffset = 0;
+        }
+        // Loop over the population size and create new individuals with
+        // crossover
+        /*for (int i = elitismOffset; i < pop.size(); i++) {
+            //随机选择两个 优秀的个体
+            Individual indiv1 = tournamentSelection(pop, geneLenght);
+            Individual indiv2 = tournamentSelection(pop, geneLenght);
+            //进行交叉
+            Individual newIndiv = crossover(indiv1, indiv2, geneLenght);
+            newPopulation.saveIndividual(i, newIndiv);
+        }*/
+
+
+        // 进行变异
+        //newPopulation.myMutate();
+        // Mutate population  突变
+        for (int i = elitismOffset; i < newPopulation.size(); i++) {
+            mutate(newPopulation.getIndividual(i));
+        }
+
+        /*
+         *校验新生成的种群是否满足约束条件
+         * 完成所有的选择、交叉、变异操作后重新校验个体是否满足条件
+         * @ 并计算了适应度
+         */
+
+        for(int i = 0; i < newPopulation.size(); i++){
+            if(!newPopulation.getIndividual(i).normalChrom()){
+               // 不满足约束条件时使用上一代的个体
+                newPopulation.saveIndividual(i, pop.getIndividual(i));
+            }
+        }
+
+        // 更新种群最优解
+        Individual bestIndividual = newPopulation.getFittest();
+        if(bestIndividual.getFitness() > globalBestIndividual.getFitness()){
+
+            globalBestIndividual.setGene(bestIndividual.getGene());
+            globalBestIndividual.setFitness(bestIndividual.getFitness());
+        }
+
+        return newPopulation;
+    }
+
+    /*
+     * 进化一个种群
+     */
     public static Population evolvePopulation(Population pop, int geneLenght) {
+
         // 存放新一代的种群
-        Population newPopulation = new Population(pop.size(), false, geneLenght);
+        Population newPopulation = new Population(pop.size());
 
         // 把最优秀的那个 放在第一个位置.
         if (elitism) {
@@ -53,8 +127,16 @@ public class Algorithm {
                 newPopulation.saveIndividual(i, pop.getIndividual(i));
             }
         }
+
+        // 更新种群最优解
+        Individual bestIndividual = newPopulation.getFittest();
+        if(globalBestIndividual == null || bestIndividual.getFitness() > globalBestIndividual.getFitness()){
+            globalBestIndividual = bestIndividual;
+        }
+
         return newPopulation;
     }
+
 
     // 进行两个个体的交叉 (暂且想象为make love的过程吧)。 交叉的概率为uniformRate
     private static Individual crossover(Individual indiv1, Individual indiv2, int geneLenght) {
@@ -84,7 +166,7 @@ public class Algorithm {
     // 随机选择一个较优秀的个体，用了进行交叉
     private static Individual tournamentSelection(Population pop, int geneLenght) {
         // Create a tournament population
-        Population tournamentPop = new Population(tournamentSize, false, geneLenght);
+        Population tournamentPop = new Population(tournamentSize);
         //随机选择 tournamentSize 个放入 tournamentPop 中
         for (int i = 0; i < tournamentSize; i++) {
             int randomId = (int) (Math.random() * pop.size());
@@ -94,4 +176,5 @@ public class Algorithm {
         Individual fittest = tournamentPop.getFittest();
         return fittest;
     }
+
 }
