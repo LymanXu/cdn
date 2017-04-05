@@ -25,7 +25,7 @@ public class Main
 
         String graphFilePath = args[0];
         String resultFilePath = args[1];*/
-        String graphFilePath = "0 初级/case5.txt";
+        String graphFilePath = "1 中级/case3.txt";
         String resultFilePath = "result.txt";
 
         LogUtil.printLog("Begin");
