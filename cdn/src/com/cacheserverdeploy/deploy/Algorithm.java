@@ -4,7 +4,7 @@ public class Algorithm {
 
     /* GA 算法的参数 */
     private static final double uniformRate = 0.7; //交叉概率
-    private static final double mutationRate = 0.01; //突变概率
+    private static final double mutationRate = 0.003; //突变概率
     private static final int tournamentSize = 5; //淘汰数组的大小
     private static final boolean elitism = true; //精英主义
 
@@ -14,81 +14,12 @@ public class Algorithm {
     private static int geneLength = 0;
 
 
-    /* Public methods */
-    
-    // 进化一个种群
-    public static Population myEvolvePopulation(Population pop, int geneLenght) {
-
-        if(globalBestIndividual == null){
-            globalBestIndividual = new Individual(geneLenght);
-            globalBestIndividual.setGene(pop.getIndividual(0).getGene());
-            globalBestIndividual.setFitness(pop.getIndividual(0).getFitness());
-        }
-
-    	// 进行选择并存放新一代的种群
-        //Population newPopulation = pop.select();
-        Population newPopulation = new Population(pop.size());
-
-        if(elitism){
-            newPopulation.saveIndividual(0, pop.getFittest());
-        }
-
-        // 进行交叉,第一个精英个体不交叉
-        newPopulation.cross();
-        int elitismOffset;
-        if (elitism) {
-            elitismOffset = 1;
-        } else {
-            elitismOffset = 0;
-        }
-        // Loop over the population size and create new individuals with
-        // crossover
-        /*for (int i = elitismOffset; i < pop.size(); i++) {
-            //随机选择两个 优秀的个体
-            Individual indiv1 = tournamentSelection(pop, geneLenght);
-            Individual indiv2 = tournamentSelection(pop, geneLenght);
-            //进行交叉
-            Individual newIndiv = crossover(indiv1, indiv2, geneLenght);
-            newPopulation.saveIndividual(i, newIndiv);
-        }*/
-
-
-        // 进行变异
-        //newPopulation.myMutate();
-        // Mutate population  突变
-        for (int i = elitismOffset; i < newPopulation.size(); i++) {
-            mutate(newPopulation.getIndividual(i));
-        }
-
-        /*
-         *校验新生成的种群是否满足约束条件
-         * 完成所有的选择、交叉、变异操作后重新校验个体是否满足条件
-         * @ 并计算了适应度
-         */
-
-        for(int i = 0; i < newPopulation.size(); i++){
-            if(!newPopulation.getIndividual(i).normalChrom()){
-               // 不满足约束条件时使用上一代的个体
-                newPopulation.saveIndividual(i, pop.getIndividual(i));
-            }
-        }
-
-        // 更新种群最优解
-        Individual bestIndividual = newPopulation.getFittest();
-        if(bestIndividual.getFitness() > globalBestIndividual.getFitness()){
-
-            globalBestIndividual.setGene(bestIndividual.getGene());
-            globalBestIndividual.setFitness(bestIndividual.getFitness());
-        }
-
-        return newPopulation;
-    }
-
     /*
      * 进化一个种群
      */
-    public static void evolvePopulation(int geneLenght) {
+    public static void evolvePopulation(int geneLength1) {
 
+        geneLength = geneLength1;
 
         // 1. 把父代最优秀的那个子代的第一个位置
         if (elitism) {
@@ -103,13 +34,11 @@ public class Algorithm {
         } else {
             elitismOffset = 0;
         }
-        // 2. 进行选择操作，使适应度较高的个体进入下代
-        //selectChild();
+        /* 2. 进行选择操作，使适应度较高的个体进入下代
+        selectChild();
 
-
-        // 2. 进行交叉操作，保存到子代
         for (int i = elitismOffset; i < oldPopulation.size(); i++) {
-            /*
+
             double pick = rand();
             while (pick == 0){
                 pick = rand();
@@ -121,14 +50,32 @@ public class Algorithm {
             int randomId1 = (int) (rand() * childPopulation.size());
             int randomId2 = (int) (rand() * childPopulation.size());
             Individual indiv1 = childPopulation.getIndividual(randomId1);
-            Individual indiv2 = childPopulation.getIndividual(randomId2);*/
-
-            Individual indiv1 = tournamentSelection(oldPopulation, geneLenght);
-            Individual indiv2 = tournamentSelection(oldPopulation, geneLenght);
+            Individual indiv2 = childPopulation.getIndividual(randomId2);
             //进行交叉
             Individual newIndiv = crossover(indiv1, indiv2, geneLenght);
 
             childPopulation.getIndividual(i).setGene(newIndiv.getGene());
+            //childPopulation.getIndividual(i).setFitness(newIndiv.getFitness());
+        }*/
+
+        //2. 进行交叉操作，保存到子代
+        for (int i = elitismOffset; i < oldPopulation.size(); i++) {
+            double pick = rand();
+            while (pick == 0){
+                pick = rand();
+            }
+
+            if(pick < uniformRate){
+                Individual indiv1 = tournamentSelection(oldPopulation, geneLength);
+                Individual indiv2 = tournamentSelection(oldPopulation, geneLength);
+                //进行交叉
+                Individual newIndiv = crossover(indiv1, indiv2, geneLength);
+
+                childPopulation.getIndividual(i).setGene(newIndiv.getGene());
+            }else{
+                childPopulation.getIndividual(i).setGene(oldPopulation.getIndividual(i).getGene());
+            }
+
             //childPopulation.getIndividual(i).setFitness(newIndiv.getFitness());
         }
 
@@ -149,8 +96,6 @@ public class Algorithm {
             }
         }
         System.out.println("@@@@ rebackCount: " + rebackCount);
-
-        //return newPopulation;
     }
 
     /*
@@ -202,6 +147,7 @@ public class Algorithm {
         double Tend = 1;
 
         double T = T0;
+        int L = geneLenght;  // 模拟退火的链长
 
         // 遗传算法参数
         int sizePop = 20;
@@ -212,10 +158,10 @@ public class Algorithm {
         int generationCount =0;
         int gen = 0;
 
-        while(T > Tend || (System.currentTimeMillis()-Deploy.startTime)<85000){
+        while(T > Tend ){// (System.currentTimeMillis()-Deploy.startTime)<85000){
             gen = 0;
 
-            while(gen < maxGen  || (System.currentTimeMillis()-Deploy.startTime)<85000){
+            while(gen < maxGen){//  && (System.currentTimeMillis()-Deploy.startTime)<85000){
                 // 1. 调用GA进行进化
                 evolvePopulation(geneLenght);
 
@@ -225,33 +171,34 @@ public class Algorithm {
                     double childFit = childPopulation.getIndividual(i).getFitness();
                     double oldFit = oldPopulation.getIndividual(i).getFitness();
 
-                    if(childFit > oldFit){
+                    if(childFit < oldFit){
                         oldPopulation.getIndividual(i).setGene(childPopulation.getIndividual(i).getGene());
                         oldPopulation.getIndividual(i).setFitness(childPopulation.getIndividual(i).getFitness());
                     }else{
                         double pick = rand();
 
-                        if(pick < Math.exp(childFit - oldFit)/T){
+                        if(pick <= Math.exp((oldFit - childFit)/T)){
                             oldPopulation.getIndividual(i).setGene(childPopulation.getIndividual(i).getGene());
                             oldPopulation.getIndividual(i).setFitness(childPopulation.getIndividual(i).getFitness());
                         }
                     }
 
-
                 }
 
                 //3. 更新种群的平均适应度
-                childPopulation.calTotalFitness();
+                oldPopulation.calTotalFitness();
 
-                // 更新种群最优解
-                Individual bestIndividual = childPopulation.getFittest();
-                if(globalBestIndividual == null || bestIndividual.getFitness() > globalBestIndividual.getFitness()){
+                // 4.将
+
+               // 更新种群最优解
+                Individual bestIndividual = oldPopulation.getFittest();
+                if(globalBestIndividual == null || bestIndividual.getFitness() < globalBestIndividual.getFitness()){
                     globalBestIndividual = bestIndividual;
                 }
 
                 generationCount++;
                 System.out.println("Generation: " + generationCount + " Fittest: "
-                        + 1/Algorithm.globalBestIndividual.getFitness() + " average Fit: " + 1/childPopulation.getAverageFitness());
+                        + Algorithm.globalBestIndividual.getFitness() + " Average Fit: " + oldPopulation.getAverageFitness());
 
                 /*
                 System.out.println("该代中每个个体适应度：");
@@ -263,8 +210,69 @@ public class Algorithm {
                 gen++;
             }
 
+            // 使用模拟退火进行随机新解
+            newGeneMetropolis(L , T, pm);
+
+            // 更新种群最优解
+            Individual bestIndividual = oldPopulation.getFittest();
+            if(globalBestIndividual == null || bestIndividual.getFitness() < globalBestIndividual.getFitness()){
+                globalBestIndividual = bestIndividual;
+            }
+
+
             T = T * q;
         }
+    }
+
+    /*
+     * 模拟退火产生新解并Metropolis选择
+     */
+    public static void newGeneMetropolis(int L , double T ,double pm){
+        Individual tempNew = new Individual(geneLength);
+
+        byte visited = (byte) 1;
+        byte visiteNo = (byte) 0;
+
+        for(int i = 1; i < oldPopulation.size(); i++){
+
+            int newAnswerCount = 0;
+
+            for(int j = 0; j < L; j++){
+
+                tempNew.setGene(oldPopulation.getIndividual(i).getGene());
+
+                int pos = rand(0,geneLength);
+                if(tempNew.getGene(pos) == visited){
+
+                    tempNew.setGene(pos, (byte) rand());
+
+                }else{
+
+                    tempNew.setGene(pos, (byte) rand());
+                }
+
+                if(tempNew.normalChrom()){
+                    // 满足条件的可行解使用接受准则，else不处理
+                    double oldFit = oldPopulation.getIndividual(i).getFitness();
+
+                    if(tempNew.getFitness() < oldFit){
+
+                        oldPopulation.getIndividual(i).setGene(tempNew.getGene());
+                        oldPopulation.getIndividual(i).setFitness(tempNew.getFitness());
+
+                    }else if(Math.exp((oldFit - tempNew.getFitness())/T)>=rand()){
+                        // 以概率接受可行解
+                        oldPopulation.getIndividual(i).setGene(tempNew.getGene());
+                        oldPopulation.getIndividual(i).setFitness(tempNew.getFitness());
+                    }
+
+                    newAnswerCount++;
+                }
+            }
+
+            //System.out.println("每个个体产生新解，成功次数为："+ newAnswerCount + " 失败次数："+ (L-newAnswerCount));
+        }
+
     }
 
     /*
@@ -325,6 +333,10 @@ public class Algorithm {
 
     private static double rand() {
         return Math.random();
+    }
+
+    private static int rand(int start, int end) {
+        return (int) (rand() * (end - start) + start);
     }
 
 }

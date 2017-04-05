@@ -41,9 +41,8 @@ public class FitnessCalc {
 
         // 调用mincost maxflow的算法
         ResultForGA resultForGA = Deploy.getMinCost(servers);
-        double cost = resultForGA.getCost();
 
-        return 1.0/cost;
+        return resultForGA.getCost();
     }
 
 

@@ -109,7 +109,7 @@ public class Individual {
 
         // 更新个体适应度
         if(resultForGA.getRight()){
-            fitness = 1.0/resultForGA.getCost();
+            fitness = resultForGA.getCost();
         }
 
         return resultForGA.getRight();
