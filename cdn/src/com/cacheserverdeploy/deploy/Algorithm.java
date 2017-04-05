@@ -106,7 +106,85 @@ public class Algorithm {
         Boolean flag = false;
         int gen = 0;
 
-        while (T > Tend){
+        while (T > Tend){// && (System.currentTimeMillis() - Deploy.startTime) < 85000) {
+            gen = 0;
+
+            if (stayCount < 20) {
+                while (gen < maxGen){// && (System.currentTimeMillis() - Deploy.startTime) < 85000) {
+                    // 1. 调用GA进行进化
+                    evolvePopulation();
+
+                    // 2. 使用模拟退火确定可接受解
+                    for (int i = 0; i < childPopulation.size(); i++) {
+
+                        double childFit = childPopulation.getIndividual(i).getFitness();
+                        double oldFit = oldPopulation.getIndividual(i).getFitness();
+
+                        if (childFit < oldFit) {
+                            oldPopulation.getIndividual(i).setGene(childPopulation.getIndividual(i).getGene());
+                            oldPopulation.getIndividual(i).setFitness(childPopulation.getIndividual(i).getFitness());
+                        } else {
+                            double pick = rand();
+
+                            if (pick <= Math.exp((oldFit - childFit) / T)) {
+                                oldPopulation.getIndividual(i).setGene(childPopulation.getIndividual(i).getGene());
+                                oldPopulation.getIndividual(i).setFitness(childPopulation.getIndividual(i).getFitness());
+                            }
+                        }
+
+                    }
+
+                    //3. 更新种群的平均适应度
+                    oldPopulation.calTotalFitness();
+
+                    // 4.将
+
+                    // 更新种群最优解
+                    Individual bestIndividual = oldPopulation.getFittest();
+                    if (globalBestIndividual == null || bestIndividual.getFitness() < globalBestIndividual.getFitness()) {
+                        globalBestIndividual = new Individual(geneLength);
+
+                        globalBestIndividual.setGene(bestIndividual.getGene());
+                        globalBestIndividual.setFitness(bestIndividual.getFitness());
+
+                        flag = true;
+                        stayCount = 0;
+
+                    } else {
+                        if (!flag) {
+                            stayCount++;
+                        }
+                        flag = false;
+                    }
+
+
+                    generationCount++;
+                    System.out.println("Generation: " + generationCount + " Fittest: "
+                            + Algorithm.globalBestIndividual.getFitness() + " Average Fit: " + oldPopulation.getAverageFitness());
+                    gen++;
+                }
+            } else {
+                // 更新种群最优解
+                if(bestIndividualForSA == null){
+                    bestIndividualForSA = new Individual(geneLength);
+                }
+                bestIndividualForSA.setGene(globalBestIndividual.getGene());
+                bestIndividualForSA.setFitness(globalBestIndividual.getFitness());
+
+                newGeneMetropolis(L, T, pm);
+
+                // 更新种群最优解
+                if (bestIndividualForSA.getFitness() < globalBestIndividual.getFitness()) {
+                    globalBestIndividual.setGene(bestIndividualForSA.getGene());
+                    globalBestIndividual.setFitness(bestIndividualForSA.getFitness());
+                }
+
+                System.out.println("Generation: " + generationCount + " Fittest: "
+                        + Algorithm.globalBestIndividual.getFitness() + " Average Fit: " + oldPopulation.getAverageFitness());
+
+            }
+
+            T = T * q;
         }
     }
 
