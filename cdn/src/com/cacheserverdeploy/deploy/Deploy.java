@@ -26,6 +26,8 @@ public class Deploy {
 
     public static long startTime = 0;
 
+    public static double MAX_COST;
+
 
     public static String[] deployServer(String[] graphContent) {
         startTime = System.currentTimeMillis();
@@ -33,7 +35,28 @@ public class Deploy {
         /**do your work here**/
         //初始化路径
         init(graphContent);//初始化
-        //调用ga
+        //设置ga参数
+        if(nodeNum<=160){
+            Algorithm.uniformRate=0.7;//交叉概率
+            Algorithm.mutationRate=0.009;//突变概率
+            Algorithm.maxGen=80;//内层遗传迭代次数
+            MainTest.popSize=30;
+            Algorithm.time=87000;
+        }else if(nodeNum<=300){
+            Algorithm.uniformRate=0.7;//交叉概率
+            Algorithm.mutationRate=0.009;//突变概率
+            Algorithm.maxGen=30;//内层遗传迭代次数
+            MainTest.popSize=30;
+            Algorithm.time=87000;
+        }else {
+            Algorithm.uniformRate=0.7;//交叉概率
+            Algorithm.mutationRate=0.009;//突变概率
+            Algorithm.maxGen=30;//内层遗传迭代次数
+            MainTest.popSize=30;
+            Algorithm.time=87000;
+        }
+
+        MAX_COST = 4* graph.totalConsumerNodeNum * graph.serverCost;
 
         //ga计算服务器位置
         int[] serverPosition= MainTest.myGA(nodeNum, first, graph.totalConsumerNodeNum);//最优的服务器位置
@@ -45,8 +68,8 @@ public class Deploy {
 //        Test.test(graph);
         //返回路径数组
         String[] result = myMinCost.getRes(graph, st, ed);
-//        System.out.println("最小费用：" + rf.getCost());
-//        System.out.println("最大流量：" + myMinCost.maxFlow + " 需求：" + allNeed);
+        System.out.println("最小费用：" + rf.getCost());
+        System.out.println("最大流量：" + myMinCost.maxFlow + " 需求：" + allNeed);
         return result;
     }
 

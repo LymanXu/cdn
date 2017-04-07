@@ -1,7 +1,5 @@
 package com.cacheserverdeploy.deploy;
 
-import com.sun.xml.internal.bind.v2.util.EditDistance;
-
 import java.util.*;
 
 /**
@@ -103,48 +101,42 @@ public class MyMinCost {
         return flow;
     }
     public static boolean relabel() {
-        Arrays.fill(dist,Integer.MAX_VALUE);//初始化距离为无穷大
-        dist[ed]=0;//汇点到自己是0
-
-        q=new LinkedList<Integer>();
-        q.add(ed);//把汇点加入队列
-
-        while (!q.isEmpty()){//spfa维护队列
-            int first=q.remove();
-            //遍历顶点下面所有边
-            int dt=0;
-            for(Edge edge:graph.edgeArrList[first]){
-                Edge edgePair=edge.pair;
-                dt=dist[first]-edge.cost;
-                if(edgePair.capatity!=0&&dt<dist[edge.to]){
-                    dist[edge.to]=dt;
-                    if(dt<=dist[q.isEmpty()?st:q.peek()]){
-                        q.addFirst(edge.to);
-                    }else{
-                        q.add(edge.to);
+        int d=Integer.MAX_VALUE;
+        for(int i=0;i<graph.totalNodeNum;i++){
+            if(visited[i]){
+                for(Edge edge:graph.edgeArrList[i]){
+                    if(edge.capatity!=0&&!visited[edge.to]&&edge.cost<d){
+                        d=edge.cost;
                     }
                 }
             }
+
         }
+        if(d==Integer.MAX_VALUE){
+            return false;
+        }
+
         for(int i=0;i<graph.totalNodeNum;i++){
-            for(Edge edge:graph.edgeArrList[i]){
-                edge.cost+=dist[edge.to]-dist[i];
+            if(visited[i]) {
+                for (Edge edge : graph.edgeArrList[i]) {
+                    edge.cost -= d;
+                    edge.pair.cost+=d;
+                }
             }
         }
-        cost+=dist[st];
-        return dist[st]<Integer.MAX_VALUE;
+        cost+=d;
+        return true;
     }
     public static void zkw_costflow(Graph graph1,int st1,int ed1) {
         mCost = 0;cost = 0;maxFlow=0;
         st =st1;ed=ed1;graph=graph1;
         dist=new int[graph.totalNodeNum];
         visited=new boolean[graph.totalNodeNum];
-        while (relabel()) {
-            visited[ed]=true;
+         do{
             do {
                 Arrays.fill(visited,false);
             } while (augment(st, Integer.MAX_VALUE) != 0);
-        }
+        }while (relabel());
 
     }
 
@@ -177,10 +169,6 @@ public class MyMinCost {
                     //如果真实容量=0，说明是反向边，不走
                     while (tpEdge.realCap==0||tpEdge.pair.capatity == 0 ) {
                         i++;
-                        if(i==graph.edgeArrList[to].size()){
-                            System.out.println(1);
-                        }
-
                         tpEdge = graph.edgeArrList[to].get(i);
                     }
                     list.add(tpEdge);

@@ -202,7 +202,7 @@ public class Population {
                         individuals[i].setFitness(oldIndividual.getFitness());
                         break;
                     }
-                    System.out.println("变异成功");
+//                    System.out.println("变异成功");
                 }
 
                 if(visited){
@@ -221,7 +221,7 @@ public class Population {
         Individual fittest = individuals[0];
         // Loop through individuals to find fittest
         for (int i = 0; i < size(); i++) {
-            if (fittest.getFitness() > getIndividual(i).getFitness()) {
+            if (fittest.getFitness() < getIndividual(i).getFitness()) {
                 fittest = getIndividual(i);
             }
         }

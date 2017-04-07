@@ -10,6 +10,9 @@ public class Individual {
     // 个体的 适应值
     private double fitness = 0;
 
+    private int consumerNum;
+    private int consumerCost;
+
     public Individual(int geneLength) {
         this.geneLength =geneLength;
 
@@ -25,14 +28,14 @@ public class Individual {
             genes[i] = gene;
         }
 
-        //判断生成的解是否满足约束
+        /*判断生成的解是否满足约束
         while(!normalChrom()){
             // 当随机生成的解不满足最大流时，再次随机生成个体
             for (int i = 0; i < size(); i++) {
                 byte gene = (byte) Math.round(Math.random());
                 genes[i] = gene;
             }
-        }
+        }*/
 
     }
 
@@ -81,6 +84,37 @@ public class Individual {
         return visit;
     }
 
+
+    // 通过和solution比较 ，计算个体的适应值
+    public double calFitness() {
+        double fitness = 0;
+
+        // 将byte[]转换为int[]
+        int[] servers = new int[size()];
+
+        for(int i = 0; i < size(); i++){
+            if(getGene()[i] == 1){
+                servers[i] = 1;
+            }else{
+                servers[i] = 0;
+            }
+        }
+
+        // 调用mincost maxflow的算法
+        ResultForGA resultForGA = Deploy.getMinCost(servers);
+
+
+        double cost = resultForGA.getCost();
+
+        if(resultForGA.getRight()){
+            fitness = Deploy.MAX_COST - resultForGA.getCost();
+        }else{
+            fitness = Deploy.MAX_COST - resultForGA.getCost() - resultForGA.getCurrentNeedCount()*consumerCost;
+        }
+
+        return fitness;
+    }
+
     /*
      * 与前面交互的函数
      *  @param：int[] servers
@@ -109,15 +143,16 @@ public class Individual {
 
         // 更新个体适应度
         if(resultForGA.getRight()){
-            fitness = resultForGA.getCost();
+            fitness = Deploy.MAX_COST - resultForGA.getCost();
         }
 
         return resultForGA.getRight();
     }
 
+
     public double getFitness() {
         if (fitness == 0) {
-            fitness = FitnessCalc.getFitness(this);
+            fitness = calFitness();
         }
         return fitness;
     }

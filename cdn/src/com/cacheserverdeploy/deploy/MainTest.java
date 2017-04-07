@@ -5,7 +5,8 @@ public class MainTest {
     public static int generationCount = 0;
     public static Population myPop;
     public static int geneLength;
-    public static int popSize = 30;
+    public static int popSize = 36;//种群：初级：30,需要为
+
 
     // mincostmaxflow 调用函数
     public static int[] myGA(int geneLength1, byte[] first, int consumerNum){
@@ -18,7 +19,8 @@ public class MainTest {
         // 2. 为全局父代种群生成初始解
         Algorithm.oldPopulation.getIndividual(0).setGene(first);
         for(int i =1; i < popSize; i++){
-            Algorithm.oldPopulation.getIndividual(i).generateIndividual();
+            Algorithm.oldPopulation.getIndividual(i).generateIndividual(consumerNum);
+            //Algorithm.oldPopulation.getIndividual(i).setGene(first);
         }
 
         // 3. 全局父代种群同步到全局子代种群
@@ -63,7 +65,7 @@ public class MainTest {
 //		System.out.println("Final Fittest Genes:");
 //		System.out.println(myPop.getFittest());
 
-        Individual bestIndividual = Algorithm.childPopulation.getFittest();
+        Individual bestIndividual = Algorithm.oldPopulation.getFittest();
 
         return bestIndividual.getServers();
 
