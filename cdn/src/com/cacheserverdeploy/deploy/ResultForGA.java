@@ -10,9 +10,6 @@ public class ResultForGA {
     private Boolean right;
     private double cost;
 
-    // 没有满足的消费点的个数
-    private int currentNeedCount;
-
     public Boolean getRight() {
         return right;
     }
@@ -27,13 +24,5 @@ public class ResultForGA {
 
     public void setCost(double cost) {
         this.cost = cost;
-    }
-
-    public int getCurrentNeedCount() {
-        return currentNeedCount;
-    }
-
-    public void setCurrentNeedCount(int currentNeedCount) {
-        this.currentNeedCount = currentNeedCount;
     }
 }

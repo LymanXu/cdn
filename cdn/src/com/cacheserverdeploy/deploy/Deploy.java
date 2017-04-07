@@ -26,8 +26,6 @@ public class Deploy {
 
     public static long startTime = 0;
 
-    public static double MAX_COST;
-
 
     public static String[] deployServer(String[] graphContent) {
         startTime = System.currentTimeMillis();
@@ -55,8 +53,7 @@ public class Deploy {
             MainTest.popSize=30;
             Algorithm.time=87000;
         }
-
-        MAX_COST = 4* graph.totalConsumerNodeNum * graph.serverCost;
+        //调用ga
 
         //ga计算服务器位置
         int[] serverPosition= MainTest.myGA(nodeNum, first, graph.totalConsumerNodeNum);//最优的服务器位置
