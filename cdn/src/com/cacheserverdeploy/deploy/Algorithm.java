@@ -90,9 +90,8 @@ public class Algorithm {
         Individual tempChild = null;
 
         //进行赌盘选择,产生新种群的一半个体
-        int tempPopSize = popSize / 2;
 
-        for (int i = 1; i < tempPopSize; i++) {
+        for (int i = 1; i < popSize; i++) {
 
             double rnd = rand();
             for (int j = 0; j < popSize; j++) {
@@ -115,31 +114,20 @@ public class Algorithm {
 
         int popSize = childPopulation.size();
         int tempPopSize = popSize / 2;
-        int tempForSize = tempPopSize / 2;
 
-        for (int i = 0; i < tempForSize; i++) {
+        for (int i = 0; i < tempPopSize; i++) {
 
-            int pos1 = rand(0, tempPopSize);
-            int pos2 = rand(0, tempPopSize);
+            int pos1 = rand(0, popSize);
+            int pos2 = rand(0, popSize);
             while (pos1 == pos2) {
-                pos2 = rand(0, tempPopSize);
+                pos2 = rand(0, popSize);
             }
 
             // 通过概率选择是否进行交叉
             double pick = rand();
-            while (pick == 0) {
-                pick = rand();
-            }
+            if (pick > uniformRate)
+                continue;
 
-            //if (pick > crossP)
-             //   continue;
-
-
-            //Individual childIndividual1 = individuals[pos1];
-            //Individual childIndividual2 = individuals[pos2];
-
-            //int flag = 0;
-            //for(int j = 0; j < 3; j++){
             // 选择交叉位置
             int bitpos = (int) rand() * geneLength;
             byte[] bits1 = childPopulation.getIndividual(pos1).getGene();
@@ -150,8 +138,8 @@ public class Algorithm {
                 bits1[j] = bits2[j];
                 bits2[j] = tempBit;
             }
-            childPopulation.getIndividual(tempPopSize + i*2).setGene(bits1);
-            childPopulation.getIndividual(tempPopSize + i*2 + 1).setGene(bits2);
+            childPopulation.getIndividual(pos1).setGene(bits1);
+            childPopulation.getIndividual(pos2).setGene(bits2);
 
         }
     }
